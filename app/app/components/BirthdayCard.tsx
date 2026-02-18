@@ -15,6 +15,41 @@ const generateRandomPositions = () =>
     top: `${Math.random() * 100}%`,
   }));
 
+// 8 petals evenly spaced — wind direction varies per petal
+const CARD_FLOWER_PETALS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  angle: (360 / 8) * i,
+  // all petals blow rightward with slight vertical spread (like original FlowerBurst)
+  wx: 90 + Math.round(Math.random() * 120),
+  wy: Math.round((Math.random() - 0.5) * 80),
+  spin: Math.round((Math.random() - 0.5) * 480),
+  delay: Math.round(Math.random() * 300), // ms stagger
+}));
+
+function CardFlower() {
+  return (
+    <div className="card-flower">
+      <div className="card-flower-stem" />
+      {CARD_FLOWER_PETALS.map((p) => (
+        <div
+          key={p.id}
+          className="card-flower-petal"
+          style={
+            {
+              "--angle": `${p.angle}deg`,
+              "--wx": `${p.wx}px`,
+              "--wy": `${p.wy}px`,
+              "--spin": `${p.spin}deg`,
+              "--delay": `${p.delay}ms`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+      <div className="card-flower-center" />
+    </div>
+  );
+}
+
 export default function BirthdayCard({
   isOpen,
   onClose,
@@ -113,18 +148,33 @@ export default function BirthdayCard({
                     damping: 20,
                     stiffness: 200,
                   }}
-                  className="mb-6 relative"
+                  className="mb-6"
                 >
-                  <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-purple-300 shadow-xl">
-                    <img
-                      src={birthdayPhotoUrl}
-                      alt={name}
-                      className="w-full h-full object-cover"
-                      loading="eager"
-                    />
-                  </div>
-                  <div className="absolute -top-2 -right-2">
-                    <Sparkles className="w-8 h-8 text-yellow-500 fill-current" />
+                  {/* Relative wrapper scoped to the circle so flower positions from its edge */}
+                  <div className="relative w-48 h-48 mx-auto">
+                    <div className="w-full h-full rounded-full overflow-hidden border-4 border-purple-300 shadow-xl">
+                      <img
+                        src={birthdayPhotoUrl}
+                        alt={name}
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                      />
+                    </div>
+                    {/* Sparkles — top-right of circle */}
+                    <div className="absolute -top-2 -right-2">
+                      <Sparkles className="w-8 h-8 text-yellow-500 fill-current" />
+                    </div>
+                    {/* Looping flower — outside left edge of circle, tilted */}
+                    <div
+                      className="absolute"
+                      style={{
+                        left: "-22px",
+                        top: "50%",
+                        transform: "translateY(-50%) rotate(-30deg)",
+                      }}
+                    >
+                      <CardFlower />
+                    </div>
                   </div>
                 </motion.div>
 

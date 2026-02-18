@@ -54,6 +54,7 @@ body {
 .petal:nth-child(odd) {
   background: linear-gradient(160deg, #fbb6ce, #f472b6);
 }
+
 .petal:nth-child(3n) {
   background: linear-gradient(160deg, #ddd6fe, #c084fc);
   width: 12px;
@@ -93,6 +94,7 @@ body {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(var(--angle)) scale(0);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, -100%) rotate(var(--angle)) scale(1);
@@ -105,32 +107,169 @@ body {
     opacity: 1;
     transform: translate(-50%, -100%) rotate(var(--angle)) scale(1);
   }
+
   60% {
     opacity: 0.9;
   }
+
   100% {
     opacity: 0;
     transform:
-      translate(
-        calc(-50% + var(--wind-x)),
-        calc(-100% + var(--wind-y))
-      )
-      rotate(calc(var(--angle) + var(--spin)))
-      scale(0.4);
+      translate(calc(-50% + var(--wind-x)),
+        calc(-100% + var(--wind-y))) rotate(calc(var(--angle) + var(--spin))) scale(0.4);
   }
 }
 
 @keyframes stem-fade {
-  from { opacity: 1; transform: translate(-50%, 0) scaleY(1); }
-  to   { opacity: 0; transform: translate(-50%, 0) scaleY(0.3); }
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0) scaleY(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, 0) scaleY(0.3);
+  }
 }
 
 @keyframes center-pop {
-  from { transform: translate(-50%, -50%) scale(0); }
-  to   { transform: translate(-50%, -50%) scale(1); }
+  from {
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 @keyframes center-fade {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* ── Birthday Card \u2014 infinite looping flower on photo ──────── */
+
+/*
+  Cycle (4 s):
+    0   – 10 %  bloom in        (0   – 0.4 s)
+    10  – 47 %  hold steady     (     ~1.5 s visible)
+    47  – 72 %  petals blow off (0.4 – 1.0 s blow)
+    72  – 100%  regrow pause    (1.1 s invisible)
+*/
+
+.card-flower {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.card-flower-petal {
+  position: absolute;
+  width: 9px;
+  height: 15px;
+  background: linear-gradient(160deg, #f9a8d4, #e879a0);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  top: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  animation: card-petal-cycle 4s ease-in-out var(--delay, 0ms) infinite;
+  will-change: transform, opacity;
+}
+
+.card-flower-petal:nth-child(odd) {
+  background: linear-gradient(160deg, #fbb6ce, #f472b6);
+}
+
+.card-flower-petal:nth-child(3n) {
+  background: linear-gradient(160deg, #ddd6fe, #c084fc);
+  width: 7px;
+  height: 13px;
+}
+
+@keyframes card-petal-cycle {
+
+  /* bloom in from centre */
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) scale(0);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -100%) rotate(var(--angle)) scale(1);
+  }
+
+  /* hold (≈1.5 s) */
+  47% {
+    opacity: 1;
+    transform: translate(-50%, -100%) rotate(var(--angle)) scale(1);
+  }
+
+  /* blow away */
+  72% {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + var(--wx)),
+        calc(-100% + var(--wy))) rotate(calc(var(--angle) + var(--spin))) scale(0.2);
+  }
+
+  /* invisible during regrow — snap back to centre */
+  72.01%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) scale(0);
+  }
+}
+
+.card-flower-center {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: radial-gradient(circle, #fde047, #facc15);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px 2px rgba(250, 204, 21, 0.45);
+  /* pops in with petals, fades out with petals, regrows */
+  animation: card-center-cycle 4s ease-in-out infinite;
+}
+
+@keyframes card-center-cycle {
+
+  0%,
+  8% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  16%,
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+}
+
+.card-flower-stem {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 30px;
+  background: linear-gradient(to bottom, #86efac, #4ade80);
+  border-radius: 2px;
+  /* stem grows down from flower centre toward the circle edge */
+  transform: translateX(-50%);
+  transform-origin: top center;
 }

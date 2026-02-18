@@ -11,6 +11,7 @@ import Loader from "./Loader";
 import BackgroundMusic from "./BackgroundMusic";
 import BirthdayCard from "./BirthdayCard";
 import AutoScroll from "./AutoScroll";
+import FlowerBurst from "./FlowerBurst";
 import { usePhotoNavigation } from "~/hooks/usePhotoNavigation";
 import { useAutoScroll } from "~/hooks/useAutoScroll";
 import { motion, AnimatePresence } from "motion/react";
@@ -21,6 +22,7 @@ export default function PhotoAlbum() {
   const [viewMode, setViewMode] = useState<"album" | "parallax">("parallax");
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(true);
+  const [cardClosed, setCardClosed] = useState(false);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -71,6 +73,7 @@ export default function PhotoAlbum() {
 
   const handleCardClose = () => {
     setShowCard(false);
+    setCardClosed(true);
     // Start music after user interaction
     musicRef.current?.startMusic();
   };
@@ -140,7 +143,9 @@ export default function PhotoAlbum() {
 
       <FloatingHearts />
 
-      <ConfettiAnimation trigger={!showCard} />
+      <ConfettiAnimation trigger={cardClosed} />
+
+      <FlowerBurst trigger={cardClosed} />
 
       <BackgroundMusic ref={musicRef} />
 

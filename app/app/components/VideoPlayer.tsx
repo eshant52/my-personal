@@ -27,6 +27,9 @@ export default function VideoPlayer({
     const container = containerRef.current;
     if (!video || !container) return;
 
+    // Use rootMargin to create a detection zone near the center of the viewport.
+    // Negative top/bottom margins shrink the intersection rect so it only triggers
+    // when the element is roughly centered vertically.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -76,7 +79,12 @@ export default function VideoPlayer({
           }
         });
       },
-      { threshold: 0.4 },
+      {
+        // Shrink the observation zone to the middle ~30% of the viewport
+        // so the video must be near-center before triggering
+        rootMargin: "-35% 0px -35% 0px",
+        threshold: 0,
+      },
     );
 
     observer.observe(container);

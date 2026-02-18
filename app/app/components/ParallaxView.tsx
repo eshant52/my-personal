@@ -18,7 +18,7 @@ export default function ParallaxView({
   onVideoEnded,
 }: ParallaxViewProps) {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto px-4 py-12 overflow-x-hidden">
       {photos.map((photo, index) => (
         <ParallaxPhoto
           key={photo.id}
@@ -58,12 +58,12 @@ function ParallaxPhoto({
   const isEven = index % 2 === 0;
   const isThird = index % 3 === 0;
 
-  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
   const rotate = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
-    isEven ? [-5, 0, 5] : [5, 0, -5],
+    isEven ? [-2, 0, 2] : [2, 0, -2],
   );
   const opacity = useTransform(
     scrollYProgress,
@@ -76,14 +76,12 @@ function ParallaxPhoto({
       ref={ref}
       style={{ y: isThird ? y : 0, opacity }}
       className={`mb-24 sm:mb-32 md:mb-40 ${
-        isEven ? "ml-0 sm:ml-12" : "mr-0 sm:mr-12"
+        isEven ? "sm:ml-12" : "sm:mr-12"
       }`}
     >
       <motion.div
         style={{ scale, rotate }}
-        whileHover={{ scale: 1.05, rotate: 0 }}
-        whileTap={{ scale: 0.95 }}
-        className="cursor-pointer group relative"
+        className="cursor-pointer group relative will-change-transform"
         onClick={onClick}
       >
         {/* Decorative elements */}
@@ -99,7 +97,7 @@ function ParallaxPhoto({
           </motion.div>
         )}
 
-        <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white p-4 sm:p-6">
+        <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white p-3 sm:p-4 md:p-6">
           {/* Photo */}
           <div className="aspect-4/3 overflow-hidden rounded-2xl relative">
             {photo.type === "video" ? (

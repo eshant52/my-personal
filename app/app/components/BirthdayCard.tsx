@@ -10,7 +10,7 @@ interface BirthdayCardProps {
 }
 
 const generateRandomPositions = () =>
-  [...Array(10)].map(() => ({
+  [...Array(5)].map(() => ({
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
   }));
@@ -42,14 +42,13 @@ export default function BirthdayCard({
 
           {/* Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 50 }}
+            exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{
               type: "spring",
-              damping: 25,
-              stiffness: 300,
-              duration: 0.6,
+              damping: 30,
+              stiffness: 350,
             }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
@@ -60,16 +59,14 @@ export default function BirthdayCard({
                   <motion.div
                     key={i}
                     className="absolute"
-                    initial={{ opacity: 0, y: -20 }}
                     animate={{
                       opacity: [0.3, 0.6, 0.3],
-                      y: [0, -10, 0],
-                      rotate: [0, 10, 0],
+                      y: [0, -8, 0],
                     }}
                     transition={{
-                      duration: 3,
+                      duration: 4,
                       repeat: Infinity,
-                      delay: i * 0.2,
+                      delay: i * 0.4,
                     }}
                     style={position}
                   >

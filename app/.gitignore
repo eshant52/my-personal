@@ -9,3 +9,5 @@
 # Data & media (deployed separately)
 /uploads/
 data.db
+data.db-shm
+data.db-wal

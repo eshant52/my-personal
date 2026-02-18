@@ -80,5 +80,5 @@ jobs:
             mkdir -p uploads/music uploads/photos/single uploads/photos/together uploads/videos
 
             # Restart the app
-            pm2 restart me-vi --update-env || pm2 start build/server/index.js --name me-vi
+            pm2 restart me-vi --update-env || pm2 start npm --name me-vi -- start
             pm2 save

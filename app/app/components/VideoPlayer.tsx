@@ -73,16 +73,14 @@ export default function VideoPlayer({
 
             // Small delay to let scrollIntoView start
             setTimeout(checkScrollSettled, 100);
-          } else if (!entry.isIntersecting && hasAutoPlayed.current) {
-            // Video scrolled out of view — pause
-            video.pause();
           }
+          // No pause on scroll-away — video loops in background
         });
       },
       {
         // Shrink the observation zone to the middle ~30% of the viewport
         // so the video must be near-center before triggering
-        rootMargin: "-35% 0px -35% 0px",
+        rootMargin: "-25% 0px -25% 0px",
         threshold: 0,
       },
     );
@@ -137,7 +135,7 @@ export default function VideoPlayer({
         ref={videoRef}
         src={src}
         className={className}
-        loop={false}
+        loop={true}
         muted={true}
         playsInline
         preload="metadata"

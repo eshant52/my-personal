@@ -75,9 +75,7 @@ function ParallaxPhoto({
     <motion.div
       ref={ref}
       style={{ y: isThird ? y : 0, opacity }}
-      className={`mb-24 sm:mb-32 md:mb-40 ${
-        isEven ? "sm:ml-12" : "sm:mr-12"
-      }`}
+      className={`mb-24 sm:mb-32 md:mb-40 ${isEven ? "sm:ml-12" : "sm:mr-12"}`}
     >
       <motion.div
         style={{ scale, rotate }}

@@ -39,7 +39,7 @@ export default function PhotoAlbum() {
     speed: 0.8,
     inactivityDelay: 3000,
     isLightboxOpen: selectedPhoto !== null,
-    isVideoPlaying,
+    isVideoPlaying: false,
   });
 
   useEffect(() => {

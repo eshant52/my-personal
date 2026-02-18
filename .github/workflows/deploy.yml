@@ -1,0 +1,84 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  APP_DIR: /home/ec2-user/me-vi
+  NODE_VERSION: "20"
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest  # GitHub Actions runner (not your server OS)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Build
+        working-directory: app
+        run: npm run build
+
+      - name: Deploy to EC2
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ec2-user
+          SOURCE: ""
+          TARGET: ${{ env.APP_DIR }}
+          EXCLUDE: >-
+            .git/,
+            node_modules/,
+            app/node_modules/,
+            .github/,
+            backup/,
+            app/.react-router/,
+            *.md
+
+      - name: Post-deploy setup
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ${{ env.APP_DIR }}/app
+
+            # Install production dependencies
+            npm ci --omit=dev
+
+            # Rebuild native modules (better-sqlite3) for ARM64
+            npm rebuild better-sqlite3
+
+            # Create .env if it doesn't exist
+            if [ ! -f .env ]; then
+              cat > .env << ENVEOF
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}
+            DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
+            DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
+            ENVEOF
+              echo "Created .env from GitHub secrets"
+            fi
+
+            # Ensure uploads directory exists
+            mkdir -p uploads/music uploads/photos/single uploads/photos/together uploads/videos
+
+            # Restart the app
+            pm2 restart me-vi --update-env || pm2 start build/server/index.js --name me-vi
+            pm2 save
